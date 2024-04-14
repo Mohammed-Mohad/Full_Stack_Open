@@ -4,6 +4,7 @@ import PersonForm from "./Components/PersonForm";
 import Persons from "./Components/Persons";
 import personService from "./Services/persons";
 import Notification from "./Components/Notification";
+import Error from "./Components/Error";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,6 +13,8 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [notification, setNotification] = useState("Added user");
   const [added, setAdd] = useState(false);
+  const [error, setError] = useState("error");
+  const [found, setFound] = useState(false);
   console.log("====================================");
   console.log("added:", added);
   console.log("====================================");
@@ -41,14 +44,25 @@ const App = () => {
               person.id !== response.id ? person : response
             )
           );
+          setAdd(true);
           console.log(added);
           setNotification(`Updated ${newObject.name} 's phone number`);
           setTimeout(() => {
             setNotification(null);
           }, 5000);
-          setAdd(!added);
+          // setAdd(!added);
           setNewName("");
           setNewNumber("");
+        })
+        .catch((error) => {
+          setFound(true);  
+          setError(`Information of ${newObject.name} has already Removed from the server`)
+          setTimeout(()=>{
+            setError(null)
+          },5000)
+          setPersons(persons.filter((person) => person.id !== existingPerson.id));
+          setNewName("")
+          setNewNumber("")
         });
       console.log("existing person: ", updatePerson);
     } else {
@@ -60,12 +74,12 @@ const App = () => {
         console.log(personService.addPerson.newObject);
         personService.addPerson(newObject).then((addedData) => {
           setPersons(persons.concat(addedData));
-          setAdd(!added);
+          setAdd(true);
           setNotification(`Added ${newObject.name}`);
           setTimeout(() => {
             setNotification(null);
           }, 5000);
-          setAdd(!added);
+          // setAdd(!added);
           setNewName("");
           setNewNumber("");
         });
@@ -75,16 +89,17 @@ const App = () => {
 
   const deletePhone = (id, name) => {
     // console.log("deleted: " , personService);
-    confirm(`Delete ${name}`);
-    personService.deletePerson(id).then(() => {
-      setAdd(!added);
-      setNotification(`Deleted ${name}`);
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
-      setAdd(!added);
-      setPersons(persons.filter((person) => person.id !== id));
-    });
+    if (window.confirm(`Delete ${name}?`)) {
+      personService.deletePerson(id).then(() => {
+        setAdd(true);
+        setNotification(`Deleted ${name}`);
+        setTimeout(() => {
+          setNotification(null);
+        }, 5000);
+        // setAdd(!added);
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
   };
 
   const HandleFilter = (e) => {
@@ -106,6 +121,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       {added && <Notification message={notification} />}
+      {found && <Error errorMessage={error} />}
       <Filter onChange={HandleFilter} />
       <h2>add a new</h2>
       <PersonForm

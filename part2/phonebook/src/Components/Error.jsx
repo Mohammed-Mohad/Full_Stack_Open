@@ -1,9 +1,8 @@
 import React from "react";
 
-const Notification = ({ message }) => {
-  const mess = {
-    color: "green",
-    // fontSize: '20px',
+const Error = ({ errorMessage }) => {
+  const error = {
+    color: "red",
     background: "lightgrey",
     fontSize: "20px",
     borderStyle: "solid",
@@ -11,10 +10,10 @@ const Notification = ({ message }) => {
     padding: "10px",
     marginBottom: "10px",
   };
-  if (message === null) {
+  if (errorMessage === null) {
     return null;
   }
-  return <div style={mess}>{message}</div>;
+  return <div style={error}>{errorMessage}</div>;
 };
 
-export default Notification;
+export default Error;
