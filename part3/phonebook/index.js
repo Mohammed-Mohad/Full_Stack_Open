@@ -1,6 +1,11 @@
-const { log, error } = require("console");
+// const { log, error } = require("console");
 const express = require("express");
+const morgan = require('morgan')
 const app = express();
+app.use(express.json())
+
+morgan.token('type',(req,res)=> JSON.stringify(req.body))
+app.use(morgan(':method :url :status :res[Content-Length] - :response-time ms :type'))
 
 
 const persons = [
@@ -58,7 +63,6 @@ app.get("/info", (req, res) => {
         res.status(204).end()
     });
 
-    app.use(express.json())
     
     const generateId = ()=>{
         const randID = Math.floor(Math.random()* 1000000000)
