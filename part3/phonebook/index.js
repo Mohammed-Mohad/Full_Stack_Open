@@ -1,8 +1,10 @@
 // const { log, error } = require("console");
 const express = require("express");
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express();
 app.use(express.json())
+app.use(cors())
 
 morgan.token('type',(req,res)=> JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[Content-Length] - :response-time ms :type'))
